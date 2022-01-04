@@ -9,6 +9,7 @@ log.level = 'trace';
 var app = express();
 app.use(bodyParser());
 
+const PORT=3325
 
 log.info("Appliocation starting ...") ;
 log.info("Application current log level = " + log.level);
@@ -42,8 +43,7 @@ generateRCML=function(req, resp){
    log.trace("req.params ->" + util.inspect(req.params));
    log.trace("req.query ->" + util.inspect(req.query));
    var rcml = builder.create('Response').dec('1.0', 'UTF-8');
-   rcml.ele('Pause', {'length':'3'}).up();
-   rcml = rcml.ele('Gather',{'action':'http://localhost:3215/dtmf', 'method':'POST', 'timeout':'5', 'numDigits':'1'});
+   rcml = rcml.ele('Gather',{'action':`http://192.168.99.83:${PORT}/dtmf`, 'method':'POST', 'timeout':'5', 'numDigits':'1'});
    rcml.ele('Say',{'voice':'man', 'languate':'en', 'loop':'1'}, "Hello world").up();
 
    resp.status(200).send(rcml.end());
@@ -64,5 +64,6 @@ app.post("/rcml", generateRCML);
 
 //app.prototype.conn = con ;
 
-log.info('Application start listening @ tcp.port = 3215 ...') ;
-app.listen("3215") ;
+log.info("Registering endpoints \n\t/rcml  \n\t/update  \n\t/dtmf");
+log.info(`Application start listening @ tcp.port = ${PORT} ...`) ;
+app.listen(`${PORT}`) ;
